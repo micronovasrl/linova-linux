@@ -764,6 +764,30 @@ static const struct panel_desc boe_nv101wxmn51 = {
 	},
 };
 
+static const struct drm_display_mode cdtech_s043wq26h_ct7_mode = {
+	.clock = 9000,
+	.hdisplay = 480,
+	.hsync_start = 480 + 40,
+	.hsync_end = 480 + 40 + 5,
+	.htotal = 480 + 40 + 5 + 5,
+	.vdisplay = 272,
+	.vsync_start = 272 + 8,
+	.vsync_end = 272 + 8 + 8,
+	.vtotal = 272 + 8 + 8 + 8,
+	.vrefresh = 60,
+	.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
+};
+
+static const struct panel_desc cdtech_s043wq26h_ct7 = {
+	.modes = &cdtech_s043wq26h_ct7_mode,
+	.num_modes = 1,
+	.bpc = 8,
+	.size = {
+		.width = 95,
+		.height = 54,
+	},
+};
+
 static const struct drm_display_mode cdtech_s070wv95_ct16_mode = {
 	.clock = 35000,
 	.hdisplay = 800,
@@ -2034,6 +2058,9 @@ static const struct of_device_id platform_of_match[] = {
 	}, {
 		.compatible = "boe,nv101wxmn51",
 		.data = &boe_nv101wxmn51,
+	}, {
+		.compatible = "cdtech,s043wq26h-ct7",
+		.data = &cdtech_s043wq26h_ct7,
 	}, {
 		.compatible = "cdtech,s070wv95-ct16",
 		.data = &cdtech_s070wv95_ct16,
