@@ -1,0 +1,37 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Source for LiNova1 CTP 4.3" HMI
+ *
+ * Copyright (C) 2018 Micronova srl
+ *   Author: Giulio Benetti <giulio.benetti@micronovasrl.com>
+ */
+
+/dts-v1/;
+#include "sun7i-a20-linova1.dtsi"
+
+/ {
+	model = "Micronova srl LiNova1 CTP 7i";
+	compatible = "micronova,a20-linova1-ctp-7i", "allwinner,sun7i-a20";
+
+	panel: panel {
+		compatible = "cdtech,s070wv95-ct16", "simple-panel";
+		power-supply = <&reg_vcc3v3>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			panel_input: endpoint@0 {
+				remote-endpoint = <&tcon0_out_panel>;
+			};
+		};
+	};
+};
+
+&ft5x {
+	touchscreen-size-x = <800>;
+	touchscreen-size-y = <480>;
+};
