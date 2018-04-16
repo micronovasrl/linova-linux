@@ -957,6 +957,7 @@ dtb-$(CONFIG_MACH_SUN7I) += \
 	sun7i-a20-icnova-swac.dtb \
 	sun7i-a20-lamobo-r1.dtb \
 	sun7i-a20-linova1-ctp-4_3i.dtb \
+	sun7i-a20-linova1-ctp-4_3i-dbg.dtb \
 	sun7i-a20-linova1-ctp-7i.dtb \
 	sun7i-a20-m3.dtb \
 	sun7i-a20-mk808c.dtb \
