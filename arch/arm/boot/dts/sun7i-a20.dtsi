@@ -881,6 +881,11 @@
 				function = "uart0";
 			};
 
+			uart1_pins_a: uart1@0 {
+				pins = "PA10", "PA11", "PA12", "PA13";
+				function = "uart1";
+			};
+
 			uart2_pins_a: uart2@0 {
 				pins = "PI16", "PI17", "PI18", "PI19";
 				function = "uart2";
