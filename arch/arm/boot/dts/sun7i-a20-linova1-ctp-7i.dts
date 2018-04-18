@@ -15,7 +15,9 @@
 
 	panel: panel {
 		compatible = "cdtech,s070wv95-ct16", "simple-panel";
+		backlight = <&backlight>;
 		power-supply = <&reg_vcc3v3>;
+		enable-gpios = <&pio 7 0 GPIO_ACTIVE_HIGH>; /* PH0 */
 		#address-cells = <1>;
 		#size-cells = <0>;
 
