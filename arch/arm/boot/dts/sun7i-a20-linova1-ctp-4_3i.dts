@@ -13,9 +13,11 @@
 	model = "Micronova srl LiNova1 CTP 4.3i";
 	compatible = "micronova,a20-linova1-ctp-4_3i", "allwinner,sun7i-a20";
 
-	panel: panel {
+	panel {
 		compatible = "cdtech,s043wq26h-ct7", "simple-panel";
+		backlight = <&backlight>;
 		power-supply = <&reg_vcc3v3>;
+		enable-gpios = <&pio 7 0 GPIO_ACTIVE_HIGH>; /* PH0 */
 		#address-cells = <1>;
 		#size-cells = <0>;
 
