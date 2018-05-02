@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Source for LiNova1 CTP 4.3" HMI
+ *
+ * Copyright (C) 2018 Micronova srl
+ *   Author: Giulio Benetti <giulio.benetti@micronovasrl.com>
+ */
+
+/dts-v1/;
+#include "sun7i-a20-linova1.dts"
+
+/ {
+	model = "Micronova srl LiNova1 CTP 7i";
+	compatible = "micronova,a20-linova1-ctp-7i", "allwinner,sun7i-a20";
+
+	panel {
+		compatible = "cdtech,s070wv95-ct16", "simple-panel";
+		backlight = <&backlight>;
+		power-supply = <&reg_vcc3v3>;
+		enable-gpios = <&pio 7 0 GPIO_ACTIVE_HIGH>; /* PH0 */
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		port@0 {
+			reg = <0>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			panel_input: endpoint@0 {
+				remote-endpoint = <&tcon0_out_panel>;
+			};
+		};
+	};
+};
+
+&i2c2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pins_a>;
+	status = "okay";
+
+	ft5x: touchscreen@38 {
+		compatible = "edt,edt-ft5306";
+		reg = <0x38>;
+		interrupt-parent = <&pio>;
+		interrupts = <7 2 IRQ_TYPE_EDGE_FALLING>; /* PH2 */
+		reset-gpios = <&pio 7 3 GPIO_ACTIVE_LOW>; /* PH3 */
+		touchscreen-size-x = <800>;
+		touchscreen-size-y = <480>;
+	};
+};
+
+&tcon0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&lcd0_rgb888_pins>;
+	status = "okay";
+};
+
+&tcon0_out {
+	tcon0_out_panel: endpoint@0 {
+		reg = <0>;
+		remote-endpoint = <&panel_input>;
+	};
+};

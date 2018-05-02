@@ -1,0 +1,14 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Device Tree Source for LiNova1 HMI Debug mode
+ *
+ * Copyright (C) 2018 Micronova srl
+ *   Author: Giulio Benetti <giulio.benetti@micronovasrl.com>
+ */
+
+/dts-v1/;
+#include "sun7i-a20-linova1-ctp-4_3i.dts"
+
+&usb_otg {
+	dr_mode = "peripheral";
+};

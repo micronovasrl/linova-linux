@@ -75,20 +75,6 @@
 	};
 };
 
-&i2c2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&i2c2_pins_a>;
-	status = "okay";
-
-	ft5x: touchscreen@38 {
-		compatible = "edt,edt-ft5306";
-		reg = <0x38>;
-		interrupt-parent = <&pio>;
-		interrupts = <7 2 IRQ_TYPE_EDGE_FALLING>; /* PH2 */
-		reset-gpios = <&pio 7 3 GPIO_ACTIVE_LOW>; /* PH3 */
-	};
-};
-
 &mmc0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc0_pins_a>;
