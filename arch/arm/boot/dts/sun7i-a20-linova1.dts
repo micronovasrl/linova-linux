@@ -166,6 +166,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart1_pins_a>;
 	status = "okay";
+	linux,rs485-enabled-at-boot-time;
 };
 
 &uart2 {
