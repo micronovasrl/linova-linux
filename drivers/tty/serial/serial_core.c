@@ -168,7 +168,11 @@ static void uart_port_dtr_rts(struct uart_port *uport, int raise)
 	} else {
 		unsigned int clear = TIOCM_DTR;
 
-		clear |= (!rs485_on || !RTS_after_send) ? TIOCM_RTS : 0;
+		if (rs485_on && !RTS_after_send)
+			uart_set_mctrl(uport, TIOCM_RTS);
+		else
+			clear |= TIOCM_RTS;
+
 		uart_clear_mctrl(uport, clear);
 	}
 }

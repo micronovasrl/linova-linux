@@ -167,6 +167,7 @@
 	pinctrl-0 = <&uart1_pins_a>;
 	status = "okay";
 	linux,rs485-enabled-at-boot-time;
+	/*rs485-rts-active-low;*/
 };
 
 &uart2 {
