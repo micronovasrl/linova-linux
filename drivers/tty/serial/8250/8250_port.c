@@ -562,10 +562,13 @@ static inline void serial8250_em485_rts_after_send(struct uart_8250_port *p)
 {
 	unsigned char mcr = serial8250_in_MCR(p);
 
-	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND)
+	if (p->port.rs485.flags & SER_RS485_RTS_AFTER_SEND){
+		p->port.mctrl |= TIOCM_RTS;
 		mcr |= UART_MCR_RTS;
-	else
+	} else {
+		p->port.mctrl &= ~TIOCM_RTS;
 		mcr &= ~UART_MCR_RTS;
+	}
 	serial8250_out_MCR(p, mcr);
 }
 
