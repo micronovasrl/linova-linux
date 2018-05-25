@@ -725,7 +725,7 @@ static int omap_8250_rs485_config(struct uart_port *port,
 	 * are idempotent
 	 */
 	if (rs485->flags & SER_RS485_ENABLED) {
-		int ret = serial8250_em485_init(up);
+		int ret = serial8250_em485_init(up, true);
 
 		if (ret) {
 			rs485->flags &= ~SER_RS485_ENABLED;
