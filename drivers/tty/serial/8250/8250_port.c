@@ -602,15 +602,16 @@ EXPORT_SYMBOL_GPL(serial8250_rpm_put);
 /**
  *	serial8250_em485_init() - put uart_8250_port into rs485 emulating
  *	@p:	uart_8250_port port instance
+ *	@p:	bool specify if 8250 port has TEMT interrupt or not
  *
  *	The function is used to start rs485 software emulating on the
  *	&struct uart_8250_port* @p. Namely, RTS is switched before/after
  *	transmission. The function is idempotent, so it is safe to call it
  *	multiple times.
  *
- *	The caller MUST enable interrupt on empty shift register before
- *	calling serial8250_em485_init(). This interrupt is not a part of
- *	8250 standard, but implementation defined.
+ *	If has_temt_isr is passed as true, the caller MUST enable interrupt
+ *	on empty shift register before calling serial8250_em485_init().
+ *	This interrupt is not a part of	8250 standard, but implementation defined.
  *
  *	The function is supposed to be called from .rs485_config callback
  *	or from any other callback protected with p->port.lock spinlock.
@@ -619,7 +620,7 @@ EXPORT_SYMBOL_GPL(serial8250_rpm_put);
  *
  *	Return 0 - success, -errno - otherwise
  */
-int serial8250_em485_init(struct uart_8250_port *p)
+int serial8250_em485_init(struct uart_8250_port *p, bool has_temt_isr)
 {
 	if (p->em485)
 		return 0;
@@ -636,6 +637,7 @@ int serial8250_em485_init(struct uart_8250_port *p)
 	p->em485->start_tx_timer.function = &serial8250_em485_handle_start_tx;
 	p->em485->port = p;
 	p->em485->active_timer = NULL;
+	p->em485->has_temt_isr = has_temt_isr;
 	serial8250_em485_rts_after_send(p);
 
 	return 0;
@@ -1520,11 +1522,19 @@ static inline void __stop_tx(struct uart_8250_port *p)
 		/*
 		 * To provide required timeing and allow FIFO transfer,
 		 * __stop_tx_rs485() must be called only when both FIFO and
-		 * shift register are empty. It is for device driver to enable
-		 * interrupt on TEMT.
+		 * shift register are empty. If 8250 port supports it,
+		 * it is for device driver to enable interrupt on TEMT.
+		 * Otherwise must loop-read until TEMT and THRE flags are set.
 		 */
-		if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
-			return;
+		if (em485->has_temt_isr) {
+			if ((lsr & BOTH_EMPTY) != BOTH_EMPTY)
+				return;
+		} else {
+			while ((lsr & BOTH_EMPTY) != BOTH_EMPTY) {
+				lsr = serial_in(p, UART_LSR);
+				cpu_relax();
+			}
+		}
 
 		em485->active_timer = NULL;
 
