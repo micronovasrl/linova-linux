@@ -668,6 +668,11 @@ static int dw8250_resume(struct device *dev)
 static int dw8250_runtime_suspend(struct device *dev)
 {
 	struct dw8250_data *data = dev_get_drvdata(dev);
+	struct uart_8250_port *up = serial8250_get_port(data->line);
+	struct uart_port *p = &up->port;
+
+	if (p->rs485.flags & (SER_RS485_ENABLED | SER_RS485_RTS_AFTER_SEND))
+		return -EBUSY;
 
 	if (!IS_ERR(data->clk))
 		clk_disable_unprepare(data->clk);
