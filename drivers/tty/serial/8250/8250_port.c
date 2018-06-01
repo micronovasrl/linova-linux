@@ -40,6 +40,8 @@
 
 #include "8250.h"
 
+#include "../serial_mctrl_gpio.h"
+
 /*
  * These are definitions for the Exar XR17V35X and XR17(C|D)15X
  */
@@ -570,6 +572,8 @@ static inline void serial8250_em485_rts_after_send(struct uart_8250_port *p)
 		p->port.mctrl &= ~TIOCM_RTS;
 	}
 	serial8250_out_MCR(p, mcr);
+
+	mctrl_gpio_set(p->gpios, p->port.mctrl);
 }
 
 static enum hrtimer_restart serial8250_em485_handle_start_tx(struct hrtimer *t);
@@ -1604,11 +1608,16 @@ static inline void start_tx_rs485(struct uart_port *port)
 	mcr = serial8250_in_MCR(up);
 	if (!!(up->port.rs485.flags & SER_RS485_RTS_ON_SEND) !=
 	    !!(mcr & UART_MCR_RTS)) {
-		if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND)
+		if (up->port.rs485.flags & SER_RS485_RTS_ON_SEND) {
 			mcr |= UART_MCR_RTS;
-		else
+			up->port.mctrl |= TIOCM_RTS;
+		} else {
 			mcr &= ~UART_MCR_RTS;
+			up->port.mctrl &= ~TIOCM_RTS;
+		}
 		serial8250_out_MCR(up, mcr);
+
+		mctrl_gpio_set(up->gpios, up->port.mctrl);
 
 		if (up->port.rs485.delay_rts_before_send > 0) {
 			em485->active_timer = &em485->start_tx_timer;
@@ -1970,7 +1979,8 @@ unsigned int serial8250_do_get_mctrl(struct uart_port *port)
 		ret |= TIOCM_DSR;
 	if (status & UART_MSR_CTS)
 		ret |= TIOCM_CTS;
-	return ret;
+
+	return mctrl_gpio_get(up->gpios, &ret);
 }
 EXPORT_SYMBOL_GPL(serial8250_do_get_mctrl);
 
@@ -2000,6 +2010,8 @@ void serial8250_do_set_mctrl(struct uart_port *port, unsigned int mctrl)
 	mcr = (mcr & up->mcr_mask) | up->mcr_force | up->mcr;
 
 	serial8250_out_MCR(up, mcr);
+
+	mctrl_gpio_set(up->gpios, mctrl);
 }
 EXPORT_SYMBOL_GPL(serial8250_do_set_mctrl);
 
