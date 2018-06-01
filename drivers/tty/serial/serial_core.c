@@ -2288,6 +2288,16 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
 
 	if (port->type != PORT_UNKNOWN) {
 		unsigned long flags;
+		int rs485_on = port->rs485_config &&
+			(port->rs485.flags & SER_RS485_ENABLED);
+		int RTS_after_send = !!(port->rs485.flags &
+				SER_RS485_RTS_AFTER_SEND);
+		int mctrl;
+
+		if (rs485_on && RTS_after_send)
+			mctrl = port->mctrl & (TIOCM_DTR | TIOCM_RTS);
+		else
+			mctrl = port->mctrl & TIOCM_DTR;
 
 		uart_report_port(drv, port);
 
@@ -2300,7 +2310,7 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
 		 * We probably don't need a spinlock around this, but
 		 */
 		spin_lock_irqsave(&port->lock, flags);
-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
+		port->ops->set_mctrl(port, mctrl);
 		spin_unlock_irqrestore(&port->lock, flags);
 
 		/*
