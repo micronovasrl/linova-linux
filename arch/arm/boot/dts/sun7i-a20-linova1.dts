@@ -164,10 +164,12 @@
 
 &uart1 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&uart1_pins_a>;
+	pinctrl-0 = <&uart1_pins_b>;
 	status = "okay";
 	linux,rs485-enabled-at-boot-time;
 	rs485-rts-active-low;
+	/* rts-gpios = <&pio 0 12 GPIO_ACTIVE_LOW>; */ /* PA12 */
+	rts-gpios = <&pio 7 16 GPIO_ACTIVE_LOW>; /* PH16 */
 };
 
 &uart2 {
