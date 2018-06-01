@@ -993,6 +993,7 @@ int serial8250_register_8250_port(struct uart_8250_port *up)
 		uart->port.unthrottle	= up->port.unthrottle;
 		uart->port.rs485_config	= up->port.rs485_config;
 		uart->port.rs485	= up->port.rs485;
+		uart->port.mctrl	= up->port.mctrl;
 		uart->dma		= up->dma;
 		uart->em485		= up->em485;
 
