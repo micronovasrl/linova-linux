@@ -350,9 +350,6 @@ static void sun4i_tcon0_mode_set_lvds(struct sun4i_tcon *tcon,
 static void sun4i_tcon0_mode_set_rgb(struct sun4i_tcon *tcon,
 				     const struct drm_display_mode *mode)
 {
-	struct drm_panel *panel = tcon->panel;
-	struct drm_connector *connector = panel->connector;
-	struct drm_display_info display_info = connector->display_info;
 	unsigned int bp, hsync, vsync;
 	u8 clk_delay;
 	u32 val = 0;
@@ -425,11 +422,17 @@ static void sun4i_tcon0_mode_set_rgb(struct sun4i_tcon *tcon,
 	 * Following code is a way to avoid quirks all around TCON
 	 * and DOTCLOCK drivers.
 	 */
-	if (display_info.bus_flags & DRM_BUS_FLAG_PIXDATA_POSEDGE)
-		clk_set_phase(tcon->dclk, 240);
+	if (!IS_ERR(tcon->panel)) {
+		struct drm_panel *panel = tcon->panel;
+		struct drm_connector *connector = panel->connector;
+		struct drm_display_info display_info = connector->display_info;
 
-	if (display_info.bus_flags & DRM_BUS_FLAG_PIXDATA_NEGEDGE)
-		clk_set_phase(tcon->dclk, 0);
+		if (display_info.bus_flags & DRM_BUS_FLAG_PIXDATA_POSEDGE)
+			clk_set_phase(tcon->dclk, 240);
+
+		if (display_info.bus_flags & DRM_BUS_FLAG_PIXDATA_NEGEDGE)
+			clk_set_phase(tcon->dclk, 0);
+	}
 
 	regmap_update_bits(tcon->regs, SUN4I_TCON0_IO_POL_REG,
 			   SUN4I_TCON0_IO_POL_HSYNC_POSITIVE | SUN4I_TCON0_IO_POL_VSYNC_POSITIVE,
